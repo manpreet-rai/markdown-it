@@ -1,6 +1,13 @@
 import {useEffect, useState} from "react";
 import prism from "prismjs";
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-python';
 import sample from './sample.js';
+
+import prism_min from './prism_min';
+import css_min from "./css_min";
 
 let md = require('markdown-it')()
     .use(require('markdown-it-bracketed-spans'))
@@ -51,8 +58,29 @@ function App() {
     }
 
     function downloadHTML(){
-        let textFileAsBlob = new Blob([document.getElementById("rendered").innerHTML], {type:'text/plain'});
+        let content = document.getElementById("rendered").innerHTML;
+
+        let headings = '<html lang="en"><head><title>'+ document.getElementById('filename').value +'</title>';
+        let scripts = '<script>'+ prism_min +'</script>';
+        let styles = '<style>'+ css_min +'</style></head><body style="padding-top: 4rem; max-width: 80rem; margin-left: auto; margin-right: auto;">';
+        let ending = '</body></html>';
+
+        let textFileAsBlob = new Blob([headings, scripts, styles, content, ending], {type:'text/plain'});
         download(textFileAsBlob, 'html');
+    }
+
+    function printPDF(){
+        let prtContent = document.getElementById("rendered");
+        let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        WinPrint.document.write('<html lang="en"><head><title>'+ document.getElementById('filename').value +'</title>');
+        WinPrint.document.write('<script>'+ prism_min +'</script>');
+        WinPrint.document.write('<style>'+ css_min +'</style></head><body>');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.write('</body></html>');
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
     }
 
     function download(blob, ext){
@@ -136,6 +164,12 @@ function App() {
                                 <path className={"text-site dark:text-white fill-current"} d="M553.147 183V72H574.634V164.083H631V183H553.147Z" />
                             </svg>
                         </button>
+
+                        <button onClick={printPDF}>
+                            <svg className={"h-6 w-auto opacity-80 hover:opacity-100 transform transition-opacity duration-300"} viewBox="0 0 45 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path className={"text-site dark:text-white fill-current"} d="M42.5 18.815H40V1.25C40 0.56 39.439 0 38.75 0H6.25C5.56 0 5 0.56 5 1.25V18.813H2.5C1.119 18.813 0 19.932 0 21.313V41.313C0 42.694 1.119 43.813 2.5 43.813H42.5C43.881 43.813 45 42.694 45 41.313V21.313C45 19.932 43.881 18.815 42.5 18.815ZM32.531 37.501H12.468V32.501H32.531V37.501ZM37.5 18.815H35C33.619 18.815 32.5 19.934 32.5 21.315V26.315H12.5V21.315C12.5 19.934 11.381 18.815 10 18.815H7.5V2.5H37.5V18.815ZM32.5 8.199H12.5C11.81 8.199 11.25 7.639 11.25 6.949C11.25 6.259 11.81 5.699 12.5 5.699H32.5C33.189 5.699 33.75 6.259 33.75 6.949C33.75 7.639 33.189 8.199 32.5 8.199ZM32.5 13.199H12.5C11.81 13.199 11.25 12.639 11.25 11.949C11.25 11.259 11.81 10.699 12.5 10.699H32.5C33.189 10.699 33.75 11.259 33.75 11.949C33.75 12.639 33.189 13.199 32.5 13.199ZM32.5 18.199H12.5C11.81 18.199 11.25 17.639 11.25 16.949C11.25 16.259 11.81 15.699 12.5 15.699H32.5C33.189 15.699 33.75 16.259 33.75 16.949C33.75 17.639 33.189 18.199 32.5 18.199Z" />
+                            </svg>
+                        </button>
                     </div>
 
                     <div className={"flex gap-x-4 items-center"}>
@@ -153,10 +187,10 @@ function App() {
                 </nav>
             </header>
 
-            <div id={"sxs"} className={"h-full flex gap-x-6 px-8"}>
-                <textarea id={"textArea"} spellCheck={"true"} className={"h-full resize-none dm-mono w-1/2 bg-gray-200 dark:bg-siteLite bg-opacity-40 dark:bg-opacity-30 border-none outline-none rounded-lg p-4 overflow-y-auto d-scrollbar scrollbar-thin scrollbar-thumb-rounded"} onChange={(e) => { setText(e.target.value); textAreaAction(); }} onPaste={(e) => { setTimeout(()=> { textAreaAction() }, 500) }} onKeyUp={(e)=> { if((e.keyCode === 8) || (e.keyCode === 46)) { textAreaAction(); } }} value={text} />
+            <div id={"sxs"} className={"h-full flex"}>
+                <textarea id={"textArea"} spellCheck={"true"} className={"h-full resize-none dm-mono w-1/2 px-8 pt-4 pb-16 bg-gray-200 dark:bg-siteLite bg-opacity-40 dark:bg-opacity-30 border-none outline-none overflow-y-auto d-scrollbar scrollbar-thin scrollbar-thumb-rounded"} onChange={(e) => { setText(e.target.value); textAreaAction(); }} onPaste={(e) => { setTimeout(()=> { textAreaAction() }, 500) }} onKeyUp={(e)=> { if((e.keyCode === 8) || (e.keyCode === 46)) { textAreaAction(); } }} value={text} />
 
-                <div id={"rendered"} className={"f-full w-1/2 p-4 overflow-y-auto d-scrollbar scrollbar-thin scrollbar-thumb-rounded"} dangerouslySetInnerHTML={{__html:md.render(text)}} />
+                <div id={"rendered"} className={"f-full w-1/2 px-8 pt-4 pb-16 overflow-y-auto d-scrollbar scrollbar-thin scrollbar-thumb-rounded"} dangerouslySetInnerHTML={{__html:md.render(text)}} />
             </div>
         </div>
     );

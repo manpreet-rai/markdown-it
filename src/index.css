@@ -14,15 +14,14 @@
   background: purple;
 }
 
-html, #root {
+html, body, #root {
   height: 100%;
 }
 
 body {
-  height: 90vh;
   font-family: 'DM Sans', sans-serif;
-  overflow-y: scroll;
-  @apply bg-white dark:bg-site d-scrollbar scrollbar-thin scrollbar-thumb-rounded;
+  overflow-y: hidden;
+  @apply bg-white dark:bg-site;
 }
 
 .min-w-large {
@@ -225,7 +224,7 @@ table {
 }
 
 tr, th, td {
-  @apply border-collapse border-b border-gem px-4 py-2 hover:bg-green-100 dark:hover:bg-green-900 text-base md:text-lg;
+  @apply text-center border-collapse border-b border-gem px-4 py-2 hover:bg-green-100 dark:hover:bg-green-900 text-base md:text-lg;
 }
 
 th {
