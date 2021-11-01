@@ -14,11 +14,12 @@
   background: purple;
 }
 
-html, body, #root {
+html, #root {
   height: 100%;
 }
 
 body {
+  height: 90vh;
   font-family: 'DM Sans', sans-serif;
   overflow-y: hidden;
   @apply bg-white dark:bg-site;
